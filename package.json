@@ -1,0 +1,13 @@
+{
+  "name": "onewarranty",
+  "private": true,
+  "scripts": {
+    "client": "npm start --prefix client",
+    "server": "npm start --prefix server",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "node server/seed/seed.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
