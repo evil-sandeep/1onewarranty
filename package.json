@@ -9,5 +9,10 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "mdb-react-ui-kit": "^9.0.0",
+    "react-router-dom": "^7.9.6",
+    "tw-elements-react": "^1.0.0-alpha-end"
   }
 }
