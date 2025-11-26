@@ -22,25 +22,165 @@ const SupportBrand = () => {
   const isSearching = searchTerm.trim().length > 0;
 
   return (
-    <section className="support-brand-full text-white flex flex-col items-center justify-center">
+    <section className="support-brand-full  flex flex-col items-center justify-center ">
       {/* header + search */}
-      <div className="w-full px-4 md:px-8 lg:px-16 py-8 max-w-none">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <h3 className="text-2xl md:text-3xl font-semibold text-center md:text-left">Brands We Support</h3>
+      <div className="w-full bg-white px-4 md:px-8 lg:px-16 py-6import { alpha } from '@mui/material/styles';
+import { gray } from '../themePrimitives';
 
-          <div className="w-full md:w-1/3">
-            <label htmlFor="brand-search" className="sr-only">Search Brand</label>
-            <input
-              id="brand-search"
-              type="text"
-              placeholder="Search Brand..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 rounded-md border border-gray-700 bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
+/* eslint-disable import/prefer-default-export */
+export const surfacesCustomizations = {
+  MuiAccordion: {
+    defaultProps: {
+      elevation: 0,
+      disableGutters: true,
+    },
+    styleOverrides: {
+      root: ({ theme }) => ({
+        padding: 4,
+        overflow: 'clip',
+        backgroundColor: (theme.vars || theme).palette.background.default,
+        border: '1px solid',
+        borderColor: (theme.vars || theme).palette.divider,
+        ':before': {
+          backgroundColor: 'transparent',
+        },
+        '&:not(:last-of-type)': {
+          borderBottom: 'none',
+        },
+        '&:first-of-type': {
+          borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
+          borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
+        },
+        '&:last-of-type': {
+          borderBottomLeftRadius: (theme.vars || theme).shape.borderRadius,
+          borderBottomRightRadius: (theme.vars || theme).shape.borderRadius,
+        },
+      }),
+    },
+  },
+  MuiAccordionSummary: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        border: 'none',
+        borderRadius: 8,
+        '&:hover': { backgroundColor: gray[50] },
+        '&:focus-visible': { backgroundColor: 'transparent' },
+        ...theme.applyStyles('dark', {
+          '&:hover': { backgroundColor: gray[800] },
+        }),
+      }),
+    },
+  },
+  MuiAccordionDetails: {
+    styleOverrides: {
+      root: { mb: 20, border: 'none' },
+    },
+  },
+  MuiPaper: {
+    defaultProps: {
+      elevation: 0,
+    },
+  },
+  MuiCard: {
+    styleOverrides: {
+      root: ({ theme }) => {
+        return {
+          padding: 16,
+          gap: 16,
+          transition: 'all 100ms ease',
+          backgroundColor: gray[50],
+          borderRadius: (theme.vars || theme).shape.borderRadius,
+          border: `1px solid ${(theme.vars || theme).palette.divider}`,
+          boxShadow: 'none',
+          ...theme.applyStyles('dark', {
+            backgroundColor: gray[800],
+          }),
+          variants: [
+            {
+              props: {
+                variant: 'outlined',
+              },
+              style: {
+                border: `1px solid ${(theme.vars || theme).palette.divider}`,
+                boxShadow: 'none',
+                background: 'hsl(0, 0%, 100%)',
+                ...theme.applyStyles('dark', {
+                  background: alpha(gray[900], 0.4),
+                }),
+              },
+            },
+          ],
+        };
+      },
+    },
+  },
+  MuiCardContent: {
+    styleOverrides: {
+      root: {
+        padding: 0,
+        '&:last-child': { paddingBottom: 0 },
+      },
+    },
+  },
+  MuiCardHeader: {
+    styleOverrides: {
+      root: {
+        padding: 0,
+      },
+    },
+  },
+  MuiCardActions: {
+    styleOverrides: {
+      root: {
+        padding: 0,
+      },
+    },
+  },
+}; shadow-sm border-b border-gray-200">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+    {/* Title */}
+    <h3 className="text-3xl font-semibold text-gray-900 tracking-tight text-center md:text-left">
+      Brands We Support
+    </h3>
+
+    {/* Search */}
+    <div className="w-full md:w-1/3">
+      <label htmlFor="brand-search" className="sr-only">Search Brand</label>
+
+      <div className="relative">
+        {/* Search icon */}
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          🔍
+        </span>
+
+        <input
+          id="brand-search"
+          type="text"
+          placeholder="Search brands..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="
+            w-full pl-12 pr-4 py-3
+            rounded-xl
+            bg-gray-50
+            text-gray-900
+            placeholder-gray-400
+            border border-gray-300
+            focus:bg-white
+            focus:border-indigo-500
+            focus:ring-2
+            focus:ring-indigo-400
+            transition
+            shadow-sm
+          "
+        />
       </div>
+    </div>
+
+  </div>
+</div>
+
 
       {/* marquee rows container - full width */}
       <div className="w-full flex-1 flex flex-col justify-center gap-6 px-2 md:px-8 lg:px-16">

@@ -11,8 +11,11 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
-    "react-router-dom": "^7.9.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
     "mdb-react-ui-kit": "^9.0.0",
-    "tw-elements-react": "^1.0.0-alpha-end"
+    "react-router-dom": "^7.9.6"
   }
 }

@@ -7,6 +7,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 // import DemoData from './components/DemoData';
 import Navbar from './components/Navbar';
+import SignUp from './components/SignUp';
 import SupportBrand from './components/SupportBrand';
 import WarrantyCheck from './components/WarrantyCheck';
 import{RouterProvider, createBrowserRouter} from 'react-router-dom'
@@ -22,8 +23,10 @@ const appRouter=createBrowserRouter([
       { path: "login", element: <Login/> },
       {path:'warrantyCheck', element:<WarrantyCheck/>},
       {path:'warrantyForm', element:<AddWarrantyForm/>},
+      {path:'/signup', element:<SignUp/>}
     ]
   },
+  
   
   
   
