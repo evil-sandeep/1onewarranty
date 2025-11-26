@@ -1,6 +1,8 @@
 import React from 'react'
 // import { Link } from 'react-router-dom'
 import logo from '../assets/feviconn.png'
+import {Link} from 'react-router-dom'
+import Login from './Login'
 
 
 const Navbar = () => {
@@ -8,7 +10,7 @@ const Navbar = () => {
         <div className='border border-black m-1 p-2 flex justify-between '>
 
             <div>
-                <img src={logo} alt="logo"  className='h-10 w-10 rounded-sm shadow-sm'/>
+               <Link to='/'><img src={logo} alt="logo"  className='h-10 w-10 rounded-sm shadow-sm'/> </Link> 
             </div>
 
             <div>
@@ -24,14 +26,17 @@ const Navbar = () => {
 
             <div>
                 <ul className='flex gap-5 '>
-                    <li>home</li>
-                    <li>contact</li>
+                    <li> <Link to='/'>HOME</Link></li>
+                    <li>CONTACT</li>
                     <li>about</li>
+                    <li><Link to='/warrantyCheck'>WarrantyCheck</Link></li>
+                    <li><Link to='/warrantyForm'>AddWarranty</Link></li>
+
                 </ul>
             </div>
 
             <div>
-            login
+             <Link to="/login">Login</Link>
             </div>
 
 

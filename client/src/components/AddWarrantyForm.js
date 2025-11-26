@@ -81,22 +81,22 @@ export default function AddWarrantyForm({ onCreated }) {
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-4 bg-gray-900 rounded">
+    <form onSubmit={handleSubmit} className="space-y-3 p-4  rounded">
       <h3 className="text-lg font-semibold">Add Product / Register</h3>
 
-      <input name="productName" value={form.productName} onChange={update} placeholder="Product name*" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="brand" value={form.brand} onChange={update} placeholder="Brand*" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="serialNumber" value={form.serialNumber} onChange={update} placeholder="Serial number*" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="purchaseDate" value={form.purchaseDate} onChange={update} type="date" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="warrantyPeriod" value={form.warrantyPeriod} onChange={update} placeholder="Warranty period (months)" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="seller" value={form.seller} onChange={update} placeholder="Seller" className="w-full px-3 py-2 rounded bg-gray-800" />
-      <input name="warrantyType" value={form.warrantyType} onChange={update} placeholder="Warranty type" className="w-full px-3 py-2 rounded bg-gray-800" />
+      <input name="productName" value={form.productName} onChange={update} placeholder="Product name*" className="w-full px-3 py-2 rounded border" />
+      <input name="brand" value={form.brand} onChange={update} placeholder="Brand*" className="w-full px-3 py-2 rounded border" />
+      <input name="serialNumber" value={form.serialNumber} onChange={update} placeholder="Serial number*" className="w-full px-3 py-2 rounded border" />
+      <input name="purchaseDate" value={form.purchaseDate} onChange={update} type="date" className="w-full px-3 py-2 rounded border" />
+      <input name="warrantyPeriod" value={form.warrantyPeriod} onChange={update} placeholder="Warranty period (months)" className="w-full px-3 py-2 rounded border" />
+      <input name="seller" value={form.seller} onChange={update} placeholder="Seller" className="w-full px-3 py-2 rounded border" />
+      <input name="warrantyType" value={form.warrantyType} onChange={update} placeholder="Warranty type" className="w-full px-3 py-2 rounded border" />
 
       {error && <div className="text-red-400">{error}</div>}
       {success && <div className="text-green-400">{success}</div>}
 
 
-      <button disabled={loading} className="px-4 py-2 bg-indigo-600 rounded">
+      <button disabled={loading} className="px-4 py-2 bg-green-600 rounded">
         {loading ? "Saving..." : "Register Product"}
       </button>
     </form>

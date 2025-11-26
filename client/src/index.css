@@ -1,3 +1,105 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 30s linear infinite;
+}
+/* marquee container: no horizontal padding here! */
+.marquee-wrap {
+  display: flex;
+  width: max-content;       /* grows to hold two tracks */
+  align-items: center;
+  will-change: transform;
+}
+
+/* each track contains the full row once; duplicated for seamless loop */
+.marquee-track {
+  display: flex;
+  gap: 16px;                /* visual space between items */
+  margin: 0;                /* important: remove default margins */
+  padding: 0;               /* important: no padding on the track */
+  flex-shrink: 0;           /* prevent shrinking */
+}
+
+/* animation: move whole wrapper left by exactly 50% of its width (one track) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Use CSS variable for easy tuning */
+:root {
+  --marquee-duration: 22s;
+}
+
+/* apply animation on .animate-marquee */
+.animate-marquee {
+  animation: marquee var(--marquee-duration) linear infinite;
+}
+
+/* Pause helper */
+.marquee-paused { animation-play-state: paused !important; }
+
+/* Important: make sure the overflow-hidden parent has NO horizontal padding,
+   or if it has padding, compensate by adding the same padding as margin to tracks. */
+
+/* make brand pills inline-block with no extra margins that break alignment */
+.brand-pill {
+  display: inline-flex;         /* or use your existing pill styles */
+  margin: 0;                    /* important */
+  padding: .5rem 1rem;
+  border-radius: 9999px;
+  background: #fff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+/* Responsive tweaks (optional) */
+@media (max-width: 768px) {
+  :root { --marquee-duration: 16s; }
+}
+
+@keyframes marquee-left {
+  0% { transform: translateX(100%); }
+ 100% { transform: translateX(-100%); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translateX(-100%); }
+ 100% { transform: translateX(100%); }
+}
+
+.marquee-row {
+  white-space: nowrap;
+  display: inline-flex;
+  gap: 2rem;
+}
+
+.marquee-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
