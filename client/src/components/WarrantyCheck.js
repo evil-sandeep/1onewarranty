@@ -35,6 +35,7 @@ export default function WarrantyCheck() {
         setLoading(false);
         return;
       }
+
       if (!res.ok) {
         const text = await res.text();
         setError("Server error: " + text);
@@ -59,52 +60,77 @@ export default function WarrantyCheck() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow mt-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">Check Product Warranty</h2>
+    <div className="max-w-xl mx-auto p-8 bg-white text-black rounded-2xl shadow-xl mt-10 border border-gray-200">
+      <h2 className="text-3xl font-semibold mb-6 text-center tracking-tight">
+        Check Product Warranty
+      </h2>
 
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <input
           value={serial}
           onChange={(e) => setSerial(e.target.value)}
           placeholder="Enter product serial number"
-          className="flex-1 px-4 py-2 rounded-md bg-gray-800 border border-gray-700 focus:outline-none"
+          className="
+            flex-1 px-4 py-3 
+            rounded-xl bg-white 
+            border border-gray-300 
+            focus:ring-2 focus:ring-black 
+            focus:border-black outline-none
+            text-gray-800
+          "
         />
+
         <button
           onClick={handleSearch}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md"
+          className="
+            px-5 py-3 rounded-xl 
+            bg-black text-white 
+            hover:bg-gray-900 
+            transition-all active:scale-95
+          "
         >
           {loading ? "Searching..." : "Check"}
         </button>
+
         <button
           onClick={clear}
-          className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md"
+          className="
+            px-4 py-3 rounded-xl 
+            bg-gray-200 
+            hover:bg-gray-300 
+            transition-all active:scale-95
+          "
         >
           Clear
         </button>
       </div>
 
-      {error && <p className="mt-3 text-red-400">{error}</p>}
+      {error && <p className="mt-4 text-red-600 text-sm">{error}</p>}
 
       {result && (
-        <div className="mt-5 p-4 bg-gray-800 rounded-md border border-gray-700">
+        <div className="mt-6 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex justify-between items-start">
             <h3 className="text-xl font-semibold">{result.productName || "Product"}</h3>
+
             <span
-              className={`text-sm font-medium px-2 py-1 rounded ${
-                result.isExpired ? "bg-red-800 text-red-300" : "bg-green-800 text-green-200"
-              }`}
+              className={`
+                text-sm font-medium px-3 py-1 rounded-full
+                ${result.isExpired 
+                  ? "bg-red-100 text-red-700" 
+                  : "bg-green-100 text-green-700"}
+              `}
             >
               {result.isExpired ? "Expired" : "Active"}
             </span>
           </div>
 
-          <div className="mt-3 text-sm space-y-1">
-            <div><strong>Brand:</strong> {result.brand || "-"}</div>
-            <div><strong>Serial:</strong> {result.serialNumber || "-"}</div>
-            <div><strong>Purchase:</strong> {formatDate(result.purchaseDate)}</div>
-            <div><strong>Warranty expiry:</strong> {formatDate(result.warrantyExpiry)}</div>
-            <div><strong>Seller:</strong> {result.seller || "-"}</div>
-            <div><strong>Type:</strong> {result.warrantyType || "-"}</div>
+          <div className="mt-4 text-sm space-y-2 text-gray-700">
+            <div><strong className="font-medium">Brand:</strong> {result.brand || "-"}</div>
+            <div><strong className="font-medium">Serial:</strong> {result.serialNumber || "-"}</div>
+            <div><strong className="font-medium">Purchase:</strong> {formatDate(result.purchaseDate)}</div>
+            <div><strong className="font-medium">Warranty Expiry:</strong> {formatDate(result.warrantyExpiry)}</div>
+            <div><strong className="font-medium">Seller:</strong> {result.seller || "-"}</div>
+            <div><strong className="font-medium">Type:</strong> {result.warrantyType || "-"}</div>
           </div>
         </div>
       )}
