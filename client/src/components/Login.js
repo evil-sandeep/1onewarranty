@@ -1,11 +1,6 @@
 import React, { useState } from "react";
-import {Link} from  'react-router-dom'
+import { Link } from "react-router-dom";
 
-/**
- * SimpleLogin component
- * Props:
- *  - onLogin: async function({ email, password, remember }) => { ... }  // optional
- */
 export default function SimpleLogin({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +11,7 @@ export default function SimpleLogin({ onLogin }) {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
+  // ---------------- VALIDATION ----------------
   const validate = () => {
     let ok = true;
     setEmailError("");
@@ -40,25 +36,37 @@ export default function SimpleLogin({ onLogin }) {
     return ok;
   };
 
+  // ---------------- HANDLE SUBMIT (REAL BACKEND) ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     if (!validate()) return;
 
     setSubmitting(true);
+
     try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Login failed");
+
+      // Save token
       if (onLogin) {
-        // user-provided handler (recommended)
-        await onLogin({ email: email.trim(), password, remember });
+        onLogin(data.token, data.user);
       } else {
-        // fallback: example fake request (replace with real API call)
-        await fakeRequest({ email: email.trim(), password, remember });
-        // you can redirect or show success here
-        console.log("Logged in (fake):", email, remember);
+        localStorage.setItem("token", data.token);
       }
+
+      console.log("Login success:", data);
+
     } catch (err) {
-      console.error(err);
-      setError(err?.message || "Login failed. Try again.");
+      setError(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -80,12 +88,10 @@ export default function SimpleLogin({ onLogin }) {
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
             placeholder="you@example.com"
-            aria-invalid={!!emailError}
-            aria-describedby={emailError ? "email-error" : undefined}
             autoComplete="email"
           />
         </label>
-        {emailError && <div id="email-error" style={styles.fieldError}>{emailError}</div>}
+        {emailError && <div style={styles.fieldError}>{emailError}</div>}
 
         <label style={styles.label}>
           Password
@@ -96,12 +102,10 @@ export default function SimpleLogin({ onLogin }) {
             onChange={(e) => setPassword(e.target.value)}
             style={styles.input}
             placeholder="••••••"
-            aria-invalid={!!passwordError}
-            aria-describedby={passwordError ? "password-error" : undefined}
             autoComplete="current-password"
           />
         </label>
-        {passwordError && <div id="password-error" style={styles.fieldError}>{passwordError}</div>}
+        {passwordError && <div style={styles.fieldError}>{passwordError}</div>}
 
         <div style={styles.row}>
           <label style={styles.checkboxLabel}>
@@ -131,24 +135,10 @@ export default function SimpleLogin({ onLogin }) {
           {submitting ? "Signing in..." : "Sign in"}
         </button>
 
-        <div style={styles.dividerRow}>
-          <div style={styles.line} /> <div style={styles.or}>or</div> <div style={styles.line} />
-        </div>
-
-        <div style={styles.socialRow}>
-          <button type="button" style={styles.ghostButton} onClick={() => alert("Sign in with Google")}>
-            Sign in with Google
-          </button>
-          <button type="button" style={styles.ghostButton} onClick={() => alert("Sign in with Facebook")}>
-            Sign in with Facebook
-          </button>
-        </div>
-
         <p style={styles.bottomText}>
-          Don't have an account?{' '}
-          <Link to='/signup'> 
+          Don’t have an account?{" "}
+          <Link to="/signup" style={{ color: "#111827", fontWeight: 600 }}>
             Sign up
-         
           </Link>
         </p>
       </form>
@@ -156,144 +146,60 @@ export default function SimpleLogin({ onLogin }) {
   );
 }
 
-/* Simple fake request to simulate network delay */
-function fakeRequest() {
-  return new Promise((res) => setTimeout(res, 700));
-}
-
-/* Inline styles (keeps component self-contained & avoids external CSS) */
+// ---------------- STYLES ----------------
 const styles = {
   page: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f6f7fb',
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#f6f7fb",
     padding: 20,
-    boxSizing: 'border-box',
   },
   card: {
-    width: '100%',
+    width: "100%",
     maxWidth: 440,
-    background: '#ffffff',
+    background: "#fff",
     borderRadius: 12,
-    padding: '28px 24px',
-    boxShadow: '0 8px 30px rgba(13, 26, 38, 0.08)',
-    boxSizing: 'border-box',
+    padding: "28px 24px",
+    boxShadow: "0 8px 30px rgba(13, 26, 38, 0.08)",
   },
-  title: {
-    margin: 0,
-    marginBottom: 16,
-    fontSize: 24,
-    fontWeight: 600,
-    color: '#0f1724',
-  },
-  label: {
-    display: 'block',
-    fontSize: 13,
-    color: '#111827',
-    marginBottom: 6,
-    marginTop: 12,
-  },
+  title: { margin: 0, marginBottom: 16, fontSize: 24, fontWeight: 600 },
+  label: { display: "block", fontSize: 13, marginBottom: 6, marginTop: 12 },
   input: {
-    width: '100%',
-    padding: '10px 12px',
+    width: "100%",
+    padding: "10px 12px",
     borderRadius: 8,
-    border: '1px solid #e6e8ee',
+    border: "1px solid #e6e8ee",
     marginTop: 6,
-    boxSizing: 'border-box',
     fontSize: 14,
-    outline: 'none',
-    background: '#fff',
   },
-  fieldError: {
-    color: '#b91c1c',
-    fontSize: 13,
-    marginTop: 6,
-  },
+  fieldError: { color: "#b91c1c", fontSize: 13, marginTop: 6 },
   formError: {
-    background: '#fee2e2',
-    color: '#7f1d1d',
-    padding: '8px 12px',
+    background: "#fee2e2",
+    color: "#7f1d1d",
+    padding: "8px 12px",
     borderRadius: 8,
     marginBottom: 8,
-    fontSize: 14,
   },
-  row: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  checkboxLabel: {
-    display: 'flex',
-    gap: 8,
-    alignItems: 'center',
-    fontSize: 14,
-    color: '#374151',
-  },
-  checkbox: {
-    width: 16,
-    height: 16,
-  },
+  row: { display: "flex", justifyContent: "space-between", marginTop: 12 },
+  checkboxLabel: { display: "flex", gap: 8, alignItems: "center", fontSize: 14 },
+  checkbox: { width: 16, height: 16 },
   linkButton: {
-    background: 'transparent',
-    border: 'none',
-    color: '#2563eb',
-    cursor: 'pointer',
+    background: "transparent",
+    border: "none",
+    color: "#2563eb",
+    cursor: "pointer",
     fontSize: 14,
   },
   primaryButton: {
-    width: '100%',
+    width: "100%",
     marginTop: 18,
-    padding: '12px 14px',
+    padding: "12px 14px",
     borderRadius: 10,
-    border: 'none',
-    cursor: 'pointer',
-    background: '#111827',
-    color: '#fff',
-    fontSize: 15,
+    background: "#111827",
+    color: "#fff",
     fontWeight: 600,
   },
-  dividerRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    marginTop: 18,
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    background: '#e6e8ee',
-  },
-  or: {
-    fontSize: 13,
-    color: '#6b7280',
-  },
-  socialRow: {
-    display: 'flex',
-    gap: 10,
-    marginTop: 12,
-    flexWrap: 'wrap',
-  },
-  ghostButton: {
-    flex: 1,
-    padding: '10px 12px',
-    background: '#fff',
-    border: '1px solid #e6e8ee',
-    borderRadius: 8,
-    cursor: 'pointer',
-    fontSize: 14,
-  },
-  bottomText: {
-    marginTop: 14,
-    fontSize: 13,
-    color: '#6b7280',
-    textAlign: 'center',
-  },
-  link: {
-    color: '#111827',
-    fontWeight: 600,
-    textDecoration: 'none',
-  },
+  bottomText: { marginTop: 14, fontSize: 13, textAlign: "center" },
 };
