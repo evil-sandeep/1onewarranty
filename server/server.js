@@ -4,6 +4,8 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const warrantyRoutes = require('./routes/warranty')
+const authRoutes = require("./routes/authRoutes.js")
+
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -33,6 +35,8 @@ app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ message: "Internal server error" });
 });
+
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
