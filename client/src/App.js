@@ -11,6 +11,8 @@ import SignUp from './components/SignUp';
 import SupportBrand from './components/SupportBrand';
 import WarrantyCheck from './components/WarrantyCheck';
 import{RouterProvider, createBrowserRouter} from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'; 
+import RequireAuth from './components/RequireAuth';
 
 
 
@@ -22,10 +24,11 @@ const appRouter=createBrowserRouter([
       { index: true, element: <Home/> }, 
       { path: "login", element: <Login/> },
       {path:'warrantyCheck', element:<WarrantyCheck/>},
-      {path:'warrantyForm', element:<AddWarrantyForm/>},
+      {path:'/warrantyForm', element:<RequireAuth><AddWarrantyForm/></RequireAuth>},
       {path:'/signup', element:<SignUp/>}
     ]
   },
+  
   
   
   
@@ -35,11 +38,13 @@ const appRouter=createBrowserRouter([
 
 function App() {
   return (
+    <AuthProvider>
     <div className="App">
       
      <RouterProvider router={appRouter} />
      
     </div>
+    </AuthProvider>
   );
 }
 

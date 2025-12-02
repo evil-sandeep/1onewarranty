@@ -2,6 +2,10 @@
 const express = require("express");
 const router = express.Router();
 const Warranty = require("../models/Warranty");
+// const {
+//   createWarranty,
+//   getWarrantyBySerial
+// } = require("../controllers/warrantyController");
 
 // GET all warranties (with optional query: brand, active)
 router.get("/", async (req, res) => {
@@ -165,5 +169,12 @@ router.get("/serial/:serial", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+// Protected add warranty route
+// router.post("/", auth, createWarranty);
+
+// // Public check warranty route
+// router.get("/serial/:serial", getWarrantyBySerial);
 
 module.exports = router;

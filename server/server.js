@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const warrantyRoutes = require('./routes/warranty')
-const authRoutes = require("./routes/authRoutes.js")
+const authRoutes = require("./routes/authRoutes");
 
 
 const PORT = process.env.PORT || 5000;
@@ -36,6 +36,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal server error" });
 });
 
+
+
+app.use("/api/warranties", warrantyRoutes);
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {

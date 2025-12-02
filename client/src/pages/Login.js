@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
-export default function Login() {
+const Login=()=> {
   const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
@@ -57,3 +57,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login

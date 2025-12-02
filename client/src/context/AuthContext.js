@@ -1,32 +1,39 @@
-import { createContext, useState, useEffect } from "react";
+import React, { createContext, useEffect, useState ,useMemo} from "react";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [user, setUser] = useState(() => {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  });
 
   useEffect(() => {
-    if (token) {
-      setUser({ token }); // simple user
-    }
+    // keep localStorage in sync
+    if (token) localStorage.setItem("token", token);
+    else localStorage.removeItem("token");
   }, [token]);
 
-  const login = (token) => {
-    localStorage.setItem("token", token);
-    setToken(token);
-    setUser({ token });
+  useEffect(() => {
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
+  }, [user]);
+
+  const login = (tokenValue, userObj) => {
+    setToken(tokenValue);
+    setUser(userObj || null);
+    if (userObj) localStorage.setItem("user", JSON.stringify(userObj));
+    else localStorage.removeItem("user");
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
+const value = useMemo(() => ({ token, user, login, logout }), [token, user]);
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

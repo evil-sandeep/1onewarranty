@@ -1,260 +1,207 @@
 // src/components/SupportBrand.jsx
-import React, { useState } from 'react';
-import allBrands from '../Data/AllBrands';
-import brandLinks from '../Data/BrandLink';
+import React, { useMemo, useState } from "react";
+import allBrands from "../Data/AllBrands";
+import brandLinks from "../Data/BrandLink";
 
-const ROWS = 8;
-const BRANDS_PER_ROW = 20;
+const ROWS = 6; // reduce rows for small screens if you like
+const BRANDS_PER_ROW = 18;
 
-const SupportBrand = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function SupportBrand() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [touchPaused, setTouchPaused] = useState(false);
 
-  const filteredBrands = allBrands.filter((brand) =>
-    brand.trim().toLowerCase().includes(searchTerm.trim().toLowerCase())
-  );
+  // filter brands
+  const filtered = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return allBrands;
+    return allBrands.filter((b) => b.toLowerCase().includes(q));
+  }, [searchTerm]);
 
   // chunk into rows
-  const chunkedBrands = [];
-  for (let i = 0; i < filteredBrands.length && chunkedBrands.length < ROWS; i += BRANDS_PER_ROW) {
-    chunkedBrands.push(filteredBrands.slice(i, i + BRANDS_PER_ROW));
-  }
+  const chunked = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < filtered.length && chunks.length < ROWS; i += BRANDS_PER_ROW) {
+      chunks.push(filtered.slice(i, i + BRANDS_PER_ROW));
+    }
+    // if not enough rows, replicate content so there is always something to scroll
+    if (chunks.length === 0 && filtered.length > 0) chunks.push(filtered);
+    return chunks;
+  }, [filtered]);
 
-  const isSearching = searchTerm.trim().length > 0;
+  // small helper to compute animation duration by row length (so speed looks consistent)
+  const durationForRow = (rowLength) => {
+    // base length multiplier - tweak these values to taste
+    const base = Math.max(18, Math.min(40, rowLength * 1.8)); // seconds
+    return `${base}s`;
+  };
+
+  // touch handlers to pause marquee on mobile
+  const handleTouchStart = () => setTouchPaused(true);
+  const handleTouchEnd = () => setTouchPaused(false);
 
   return (
-    <section className="support-brand-full  flex flex-col items-center justify-center ">
-      {/* header + search */}
-      <div className="w-full bg-white px-4 md:px-8 lg:px-16 py-6import { alpha } from '@mui/material/styles';
-import { gray } from '../themePrimitives';
+    <section className="w-screen bg-white text-gray-900">
+      {/* marquee CSS (self-contained) */}
+      <style>{`
+        :root { --marquee-ease: linear; }
 
-/* eslint-disable import/prefer-default-export */
-export const surfacesCustomizations = {
-  MuiAccordion: {
-    defaultProps: {
-      elevation: 0,
-      disableGutters: true,
-    },
-    styleOverrides: {
-      root: ({ theme }) => ({
-        padding: 4,
-        overflow: 'clip',
-        backgroundColor: (theme.vars || theme).palette.background.default,
-        border: '1px solid',
-        borderColor: (theme.vars || theme).palette.divider,
-        ':before': {
-          backgroundColor: 'transparent',
-        },
-        '&:not(:last-of-type)': {
-          borderBottom: 'none',
-        },
-        '&:first-of-type': {
-          borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-          borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-        },
-        '&:last-of-type': {
-          borderBottomLeftRadius: (theme.vars || theme).shape.borderRadius,
-          borderBottomRightRadius: (theme.vars || theme).shape.borderRadius,
-        },
-      }),
-    },
-  },
-  MuiAccordionSummary: {
-    styleOverrides: {
-      root: ({ theme }) => ({
-        border: 'none',
-        borderRadius: 8,
-        '&:hover': { backgroundColor: gray[50] },
-        '&:focus-visible': { backgroundColor: 'transparent' },
-        ...theme.applyStyles('dark', {
-          '&:hover': { backgroundColor: gray[800] },
-        }),
-      }),
-    },
-  },
-  MuiAccordionDetails: {
-    styleOverrides: {
-      root: { mb: 20, border: 'none' },
-    },
-  },
-  MuiPaper: {
-    defaultProps: {
-      elevation: 0,
-    },
-  },
-  MuiCard: {
-    styleOverrides: {
-      root: ({ theme }) => {
-        return {
-          padding: 16,
-          gap: 16,
-          transition: 'all 100ms ease',
-          backgroundColor: gray[50],
-          borderRadius: (theme.vars || theme).shape.borderRadius,
-          border: `1px solid ${(theme.vars || theme).palette.divider}`,
-          boxShadow: 'none',
-          ...theme.applyStyles('dark', {
-            backgroundColor: gray[800],
-          }),
-          variants: [
-            {
-              props: {
-                variant: 'outlined',
-              },
-              style: {
-                border: `1px solid ${(theme.vars || theme).palette.divider}`,
-                boxShadow: 'none',
-                background: 'hsl(0, 0%, 100%)',
-                ...theme.applyStyles('dark', {
-                  background: alpha(gray[900], 0.4),
-                }),
-              },
-            },
-          ],
-        };
-      },
-    },
-  },
-  MuiCardContent: {
-    styleOverrides: {
-      root: {
-        padding: 0,
-        '&:last-child': { paddingBottom: 0 },
-      },
-    },
-  },
-  MuiCardHeader: {
-    styleOverrides: {
-      root: {
-        padding: 0,
-      },
-    },
-  },
-  MuiCardActions: {
-    styleOverrides: {
-      root: {
-        padding: 0,
-      },
-    },
-  },
-}; shadow-sm border-b border-gray-200">
-  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        @keyframes marquee-left {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-right {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0%); }
+        }
 
-    {/* Title */}
-    <h3 className="text-3xl font-semibold text-gray-900 tracking-tight text-center md:text-left">
-      Brands We Support
-    </h3>
+        .marquee-wrap { display:flex; width:100%; overflow:hidden; }
+        .marquee-track { display:flex; min-width:200%; align-items:center; gap:0.5rem; }
+        .marquee-list { display:inline-flex; gap:0.5rem; align-items:center; padding:0.5rem 0; }
 
-    {/* Search */}
-    <div className="w-full md:w-1/3">
-      <label htmlFor="brand-search" className="sr-only">Search Brand</label>
+        .marquee-play-left { animation-name: marquee-left; animation-timing-function: var(--marquee-ease); animation-iteration-count: infinite; animation-fill-mode: forwards; }
+        .marquee-play-right { animation-name: marquee-right; animation-timing-function: var(--marquee-ease); animation-iteration-count: infinite; animation-fill-mode: forwards; }
 
-      <div className="relative">
-        {/* Search icon */}
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-          🔍
-        </span>
+        /* pause on hover (desktop) */
+        .marquee-wrap:hover .marquee-play-left,
+        .marquee-wrap:hover .marquee-play-right {
+          animation-play-state: paused;
+        }
 
-        <input
-          id="brand-search"
-          type="text"
-          placeholder="Search brands..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="
-            w-full pl-12 pr-4 py-3
-            rounded-xl
-            bg-gray-50
-            text-gray-900
-            placeholder-gray-400
-            border border-gray-300
-            focus:bg-white
-            focus:border-indigo-500
-            focus:ring-2
-            focus:ring-indigo-400
-            transition
-            shadow-sm
-          "
-        />
-      </div>
+        /* respects reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .marquee-play-left, .marquee-play-right { animation: none !important; transform: none !important; }
+        }
+      `}</style>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-b border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="text-2xl md:text-3xl font-semibold">Brands We Support</h3>
+            <p className="text-sm text-gray-500 mt-1">Tap a brand to open its warranty page</p>
+          </div>
+
+         <div className="flex-1 px-4 hidden sm:flex justify-center">
+  <div className="w-full max-w-xl">
+    <label htmlFor="site-search" className="sr-only">Search serial or brand</label>
+    <div className="relative">
+      <input
+        id="site-search"
+        type="search"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search brand or serial — e.g. SNX200A93847"
+        className="w-full px-4 py-2 rounded-full border border-gray-200 bg-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+      />
+      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">⌕</span>
     </div>
-
   </div>
 </div>
 
 
-      {/* marquee rows container - full width */}
-      <div className="w-full flex-1 flex flex-col justify-center gap-6 px-2 md:px-8 lg:px-16">
-        {chunkedBrands.length === 0 ? (
-          <p className="text-center text-gray-400">No brands found.</p>
+          
+        </div>
+      </div>
+
+      <div className="w-full">
+        {chunked.length === 0 ? (
+          <div className="py-10 text-center text-gray-500">No brands found.</div>
         ) : (
-          chunkedBrands.map((row, index) => {
-            // choose animation class per row (alternating)
-            const animationClass = isSearching ? 'marquee-paused' : (index % 2 === 1 ? 'animate-marquee-reverse' : 'animate-marquee');
+          <div className="space-y-6 py-6">
+            {chunked.map((row, rowIndex) => {
+              const direction = rowIndex % 2 === 0 ? "left" : "right";
+              const duration = durationForRow(row.length);
+              // apply pause on touch by overriding animation-play-state via inline style
+              const playState = touchPaused ? "paused" : "running";
 
-            return (
-              <div key={index} className="overflow-hidden relative w-full">
-                {/* marquee wrapper — will animate; use animationClass here */}
-                <div className={`marquee-wrap ${animationClass}`}>
-                  {/* single track (one copy) */}
-                  <div className="marquee-track">
-                    {row.map((brand, i) => (
-                      <BrandPill key={`a-${brand}-${i}`} brand={brand} />
-                    ))}
-                  </div>
+              return (
+                <div key={rowIndex} className="w-full overflow-hidden">
+                  {/* full-screen marquee — uses w-screen to ensure edge-to-edge */}
+                  <div
+                    className="marquee-wrap"
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    // also pause on mouseenter for fine control
+                    onMouseEnter={() => {}}
+                    onMouseLeave={() => {}}
+                    aria-hidden={false}
+                  >
+                    <div
+                      className="marquee-track"
+                      // set animation via style (duration + direction + play state)
+                      style={{
+                        // pick play class
+                        animationDuration: duration,
+                        animationPlayState: playState,
+                      }}
+                    >
+                      {/* first copy */}
+                      <div
+                        className="marquee-list"
+                        style={{
+                          // assign animation class using direction
+                          animationName: direction === "left" ? "marquee-left" : "marquee-right",
+                          animationDuration: duration,
+                          animationTimingFunction: "linear",
+                          animationIterationCount: "infinite",
+                          animationPlayState: playState,
+                        }}
+                      >
+                        {row.map((brand, i) => (
+                          <BrandPill key={`a-${rowIndex}-${i}`} brand={brand} />
+                        ))}
+                      </div>
 
-                  {/* duplicated track (exact same content) */}
-                  <div className="marquee-track" aria-hidden="true">
-                    {row.map((brand, i) => (
-                      <BrandPill key={`b-${brand}-${i}`} brand={brand} />
-                    ))}
+                      {/* duplicated copy */}
+                      <div
+                        className="marquee-list"
+                        aria-hidden="true"
+                        style={{
+                          animationName: direction === "left" ? "marquee-left" : "marquee-right",
+                          animationDuration: duration,
+                          animationTimingFunction: "linear",
+                          animationIterationCount: "infinite",
+                          animationPlayState: playState,
+                        }}
+                      >
+                        {row.map((brand, i) => (
+                          <BrandPill key={`b-${rowIndex}-${i}`} brand={brand} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
+
+      {/* <div className="w-full px-4 md:px-8 lg:px-16 py-4 text-center text-sm text-gray-500">
+        Tip: Hover to pause (desktop) • Tap to pause (mobile) • Tap a brand to open its warranty page
+      </div> */}
     </section>
   );
-};
+}
 
+/* BrandPill — responsive sizes for different screen widths */
 function BrandPill({ brand }) {
   const brandKey = brand.trim().toLowerCase();
   const redirectUrl = brandLinks[brandKey] || brandLinks[brand];
 
   const open = () => {
-    if (redirectUrl) window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    if (redirectUrl) window.open(redirectUrl, "_blank", "noopener,noreferrer");
     else alert(`No warranty page found for ${brand}`);
   };
 
   return (
-    <div
+    <button
       onClick={open}
-      role="button"
-      tabIndex={0}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && open()}
+      tabIndex={0}
       aria-label={`Open warranty page for ${brand}`}
-      className="
-        inline-flex items-center justify-center
-        cursor-pointer select-none
-        px-4 py-2
-        mx-2 mb-2
-        text-sm font-medium text-gray-800
-        bg-white
-        border border-gray-300
-        rounded-lg
-        shadow-sm
-        hover:bg-gray-100
-        hover:shadow-md
-        hover:border-gray-400
-        transition-all duration-200
-        focus:outline-none
-        focus:ring-2 focus:ring-blue-500
-      "
+      className="flex-shrink-0 inline-flex items-center justify-center px-3 py-2 mx-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md text-xs sm:text-sm md:text-sm lg:text-base font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
     >
       {brand}
-    </div>
+    </button>
   );
 }
-
-export default SupportBrand;

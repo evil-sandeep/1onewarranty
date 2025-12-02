@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AddWarrantyForm({ onCreated }) {
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     productName: "",
     brand: "",
@@ -10,15 +15,13 @@ export default function AddWarrantyForm({ onCreated }) {
     seller: "",
     warrantyType: ""
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const update = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -30,27 +33,30 @@ export default function AddWarrantyForm({ onCreated }) {
     setLoading(true);
 
     try {
-      const payload = { ...form };
-
-      if (payload.warrantyPeriod)
-        payload.warrantyPeriod = Number(payload.warrantyPeriod);
-
-      if (!payload.warrantyExpiry) delete payload.warrantyExpiry;
-
       const res = await fetch("http://localhost:5000/api/warranties", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(form)
       });
 
+      if (res.status === 401) {
+        // token invalid or expired
+        logout();
+        navigate("/login", { replace: true, state: { from: "/warrantyForm" } });
+        return;
+      }
+
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(err.message || "Failed to add");
+        const body = await res.json().catch(() => ({ message: res.statusText }));
+        throw new Error(body.message || "Failed");
       }
 
       const created = await res.json();
-      if (onCreated) onCreated(created);
-
+      setSuccess("Product added successfully!");
+      setTimeout(() => setSuccess(""), 3000);
       setForm({
         productName: "",
         brand: "",
@@ -60,12 +66,8 @@ export default function AddWarrantyForm({ onCreated }) {
         seller: "",
         warrantyType: ""
       });
-
-      setSuccess("Product added successfully!");
-      setTimeout(() => setSuccess(""), 3000);
-
+      if (onCreated) onCreated(created);
     } catch (err) {
-      console.error(err);
       setError(err.message || "Server error");
     } finally {
       setLoading(false);
@@ -73,129 +75,25 @@ export default function AddWarrantyForm({ onCreated }) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="
-        space-y-4 p-6 
-        bg-white rounded-2xl 
-        shadow-lg border border-gray-200
-      "
-    >
-      <h3 className="text-2xl font-semibold text-gray-900 tracking-tight">
-        Add Product / Register
-      </h3>
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow mt-8">
+      <h2 className="text-2xl font-semibold mb-4">Add Product / Register</h2>
 
-      {/* INPUT FIELD STYLE (Apple-like) */}
-      <div className="space-y-3">
-        <input
-          name="productName"
-          value={form.productName}
-          onChange={update}
-          placeholder="Product name*"
-          className="
-            w-full px-4 py-3
-            rounded-xl bg-white
-            border border-gray-300
-            placeholder-gray-400
-            focus:ring-2 focus:ring-black
-            focus:border-black outline-none
-            transition
-          "
-        />
+      <form onSubmit={submit} className="space-y-3">
+        <input name="productName" value={form.productName} onChange={update} placeholder="Product name*" className="w-full border px-3 py-2 rounded" />
+        <input name="brand" value={form.brand} onChange={update} placeholder="Brand*" className="w-full border px-3 py-2 rounded" />
+        <input name="serialNumber" value={form.serialNumber} onChange={update} placeholder="Serial number*" className="w-full border px-3 py-2 rounded" />
+        <input name="purchaseDate" value={form.purchaseDate} onChange={update} type="date" className="w-full border px-3 py-2 rounded" />
+        <input name="warrantyPeriod" value={form.warrantyPeriod} onChange={update} placeholder="Warranty period (months)" className="w-full border px-3 py-2 rounded" />
+        <input name="seller" value={form.seller} onChange={update} placeholder="Seller" className="w-full border px-3 py-2 rounded" />
+        <input name="warrantyType" value={form.warrantyType} onChange={update} placeholder="Warranty type" className="w-full border px-3 py-2 rounded" />
 
-        <input
-          name="brand"
-          value={form.brand}
-          onChange={update}
-          placeholder="Brand*"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
+        {error && <div className="text-red-600">{error}</div>}
+        {success && <div className="text-green-600">{success}</div>}
 
-        <input
-          name="serialNumber"
-          value={form.serialNumber}
-          onChange={update}
-          placeholder="Serial number*"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
-
-        <input
-          name="purchaseDate"
-          value={form.purchaseDate}
-          onChange={update}
-          type="date"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
-
-        <input
-          name="warrantyPeriod"
-          value={form.warrantyPeriod}
-          onChange={update}
-          placeholder="Warranty period (months)"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
-
-        <input
-          name="seller"
-          value={form.seller}
-          onChange={update}
-          placeholder="Seller"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
-
-        <input
-          name="warrantyType"
-          value={form.warrantyType}
-          onChange={update}
-          placeholder="Warranty type"
-          className="
-            w-full px-4 py-3 rounded-xl bg-white
-            border border-gray-300 placeholder-gray-400
-            focus:ring-2 focus:ring-black focus:border-black outline-none
-          "
-        />
-      </div>
-
-      {error && (
-        <div className="text-red-600 text-sm font-medium">{error}</div>
-      )}
-      {success && (
-        <div className="text-green-600 text-sm font-medium">{success}</div>
-      )}
-
-      {/* BUTTON */}
-      <button
-        disabled={loading}
-        className="
-          w-full py-3 mt-2
-          bg-black text-white
-          rounded-xl font-medium
-          hover:bg-gray-900 active:scale-95
-          transition
-        "
-      >
-        {loading ? "Saving..." : "Register Product"}
-      </button>
-    </form>
+        <button type="submit" disabled={loading} className="w-full py-2 bg-black text-white rounded">
+          {loading ? "Saving..." : "Register Product"}
+        </button>
+      </form>
+    </div>
   );
 }
