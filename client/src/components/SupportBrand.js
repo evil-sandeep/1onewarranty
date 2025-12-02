@@ -73,34 +73,37 @@ export default function SupportBrand() {
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-b border-gray-100">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-semibold">Brands We Support</h3>
-            <p className="text-sm text-gray-500 mt-1">Tap a brand to open its warranty page</p>
-          </div>
+     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-b border-gray-100">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-         <div className="flex-1 px-4 hidden sm:flex justify-center">
-  <div className="w-full max-w-xl">
-    <label htmlFor="site-search" className="sr-only">Search serial or brand</label>
-    <div className="relative">
-      <input
-        id="site-search"
-        type="search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search brand or serial — e.g. SNX200A93847"
-        className="w-full px-4 py-2 rounded-full border border-gray-200 bg-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
-      />
-      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">⌕</span>
+    {/* LEFT — Title */}
+    <div className="text-left">
+      <h3 className="text-2xl md:text-3xl font-semibold">Brands We Support</h3>
+      <p className="text-sm text-gray-500 mt-1">Tap a brand to open its warranty page</p>
     </div>
+
+    {/* RIGHT — Search Bar */}
+    <div className="w-full md:w-auto md:flex md:justify-end">
+      <div className="w-full sm:w-96 md:w-96">
+        <label htmlFor="site-search" className="sr-only">Search serial or brand</label>
+        <div className="relative">
+          <input
+            id="site-search"
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search brand or serial — e.g. SNX200A93847"
+            className="w-full px-4 py-2 rounded-full border border-gray-200 bg-white placeholder-gray-400 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">⌕</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-
-          
-        </div>
-      </div>
 
       <div className="w-full">
         {chunked.length === 0 ? (

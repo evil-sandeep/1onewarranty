@@ -60,33 +60,35 @@ export default function WarrantyCheck() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-8 bg-white text-black rounded-2xl shadow-xl mt-10 border border-gray-200">
-      <h2 className="text-3xl font-semibold mb-6 text-center tracking-tight">
-        Check Product Warranty
+    <div className="max-w-xl mx-auto mt-16 p-10 bg-white border border-gray-200 rounded-3xl shadow-sm">
+      <h2 className="text-3xl font-semibold text-center tracking-tight text-gray-900">
+        Warranty Check
       </h2>
 
-      <div className="flex gap-3">
+      {/* INPUT + BUTTONS */}
+      <div className="mt-8 flex gap-3">
         <input
           value={serial}
           onChange={(e) => setSerial(e.target.value)}
-          placeholder="Enter product serial number"
+          placeholder="Enter serial number"
           className="
-            flex-1 px-4 py-3 
-            rounded-xl bg-white 
-            border border-gray-300 
-            focus:ring-2 focus:ring-black 
-            focus:border-black outline-none
-            text-gray-800
+            flex-1 px-5 py-3
+            rounded-2xl border border-gray-300
+            bg-gray-50 text-gray-900
+            focus:ring-2 focus:ring-gray-900
+            focus:border-gray-900 outline-none
+            transition-all
           "
         />
 
         <button
           onClick={handleSearch}
           className="
-            px-5 py-3 rounded-xl 
-            bg-black text-white 
-            hover:bg-gray-900 
+            px-6 py-3 rounded-2xl
+            bg-gray-900 text-white
+            hover:bg-black
             transition-all active:scale-95
+            font-medium
           "
         >
           {loading ? "Searching..." : "Check"}
@@ -95,42 +97,69 @@ export default function WarrantyCheck() {
         <button
           onClick={clear}
           className="
-            px-4 py-3 rounded-xl 
-            bg-gray-200 
-            hover:bg-gray-300 
+            px-5 py-3 rounded-2xl
+            bg-gray-100 text-gray-800
+            hover:bg-gray-200
             transition-all active:scale-95
+            font-medium
           "
         >
           Clear
         </button>
       </div>
 
-      {error && <p className="mt-4 text-red-600 text-sm">{error}</p>}
+      {/* ERROR */}
+      {error && (
+        <p className="mt-4 text-red-600 text-sm font-medium">{error}</p>
+      )}
 
+      {/* RESULT */}
       {result && (
-        <div className="mt-6 p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+        <div className="mt-8 p-6 rounded-3xl border border-gray-200 bg-gray-50 shadow-sm">
           <div className="flex justify-between items-start">
-            <h3 className="text-xl font-semibold">{result.productName || "Product"}</h3>
+            <h3 className="text-xl font-semibold text-gray-900">
+              {result.productName || "Product"}
+            </h3>
 
             <span
               className={`
                 text-sm font-medium px-3 py-1 rounded-full
-                ${result.isExpired 
-                  ? "bg-red-100 text-red-700" 
-                  : "bg-green-100 text-green-700"}
+                ${
+                  result.isExpired
+                    ? "bg-red-100 text-red-700"
+                    : "bg-green-100 text-green-700"
+                }
               `}
             >
               {result.isExpired ? "Expired" : "Active"}
             </span>
           </div>
 
-          <div className="mt-4 text-sm space-y-2 text-gray-700">
-            <div><strong className="font-medium">Brand:</strong> {result.brand || "-"}</div>
-            <div><strong className="font-medium">Serial:</strong> {result.serialNumber || "-"}</div>
-            <div><strong className="font-medium">Purchase:</strong> {formatDate(result.purchaseDate)}</div>
-            <div><strong className="font-medium">Warranty Expiry:</strong> {formatDate(result.warrantyExpiry)}</div>
-            <div><strong className="font-medium">Seller:</strong> {result.seller || "-"}</div>
-            <div><strong className="font-medium">Type:</strong> {result.warrantyType || "-"}</div>
+          <div className="mt-5 text-sm text-gray-700 space-y-2">
+            <p>
+              <strong className="font-medium">Brand:</strong>{" "}
+              {result.brand || "-"}
+            </p>
+            <p>
+              <strong className="font-medium">Serial:</strong>{" "}
+              {result.serialNumber || "-"}
+            </p>
+            <p>
+              <strong className="font-medium">Purchase:</strong>{" "}
+              {formatDate(result.purchaseDate)}
+            </p>
+            <p>
+              <strong className="font-medium">Warranty Expiry:</strong>{" "}
+              {formatDate(result.warrantyExpiry)}
+            </p>
+            <p>
+              <strong className="font-medium">Seller:</strong>{" "}
+              {result.seller || "-"}
+            </p>
+            <p>
+              <strong className="font-medium">Type:</strong>{" "}
+              {result.warrantyType || "-"}
+            </p>
           </div>
         </div>
       )}

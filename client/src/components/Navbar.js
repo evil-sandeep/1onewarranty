@@ -31,9 +31,11 @@ export default function Navbar() {
   return (
     <header className="w-full bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* FLEX ROW */}
         <div className="flex items-center justify-between h-16">
-          
-          {/* Left: Logo */}
+
+          {/* LEFT — LOGO */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3">
               <img
@@ -50,20 +52,37 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Center: Nav Links */}
-          <nav className="hidden md:flex items-center gap-6">
+          {/* CENTER — NAV LINKS (Desktop only) */}
+          <nav className="hidden md:flex items-center gap-6 mx-auto">
             <Link to="/" className="text-sm text-gray-800 hover:text-black transition">Home</Link>
             <Link to="/warrantyCheck" className="text-sm text-gray-800 hover:text-black transition">Warranty Check</Link>
             <Link to="/warrantyForm" className="text-sm text-gray-800 hover:text-black transition">Add Warranty</Link>
           </nav>
 
-          {/* Right: Auth / Profile / Logout */}
+          {/* RIGHT — Mobile Button + Profile/Login */}
           <div className="flex items-center gap-4">
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              onClick={() => setMobileOpen((s) => !s)}
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none"
+              aria-expanded={mobileOpen}
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {mobileOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+
+            {/* LOGIN / PROFILE */}
             {!user ? (
               <Link
                 to="/login"
-                className="inline-flex items-center px-4 py-2 bg-black text-white rounded-full text-sm font-medium shadow-sm hover:bg-gray-900 transition"
-                aria-label="Login"
+                className="hidden md:inline-flex items-center px-4 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-900"
               >
                 Login
               </Link>
@@ -71,12 +90,11 @@ export default function Navbar() {
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setProfileOpen((s) => !s)}
-                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gray-100 hover:shadow-md transition focus:outline-none"
-                  aria-haspopup="true"
-                  aria-expanded={profileOpen}
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gray-100 hover:shadow-md transition"
                 >
                   <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-800">
-                    {user.name ? user.name.charAt(0).toUpperCase() : (user.email || "U").charAt(0).toUpperCase()}
+                    {user.name?.charAt(0).toUpperCase() ||
+                      user.email?.charAt(0).toUpperCase()}
                   </div>
                   <div className="hidden sm:flex flex-col text-left">
                     <span className="text-sm text-gray-900">{user.name || user.email}</span>
@@ -93,6 +111,7 @@ export default function Navbar() {
                     >
                       Profile
                     </Link>
+
                     <Link
                       to="/my-warranties"
                       className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
@@ -100,7 +119,9 @@ export default function Navbar() {
                     >
                       My Warranties
                     </Link>
+
                     <div className="border-t border-gray-100 my-1" />
+
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
@@ -111,28 +132,12 @@ export default function Navbar() {
                 )}
               </div>
             )}
-          </div>
 
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen((s) => !s)}
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none"
-            aria-expanded={mobileOpen}
-            aria-label="Toggle menu"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* MOBILE MENU */}
       {mobileOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white">
           <div className="px-4 pt-3 pb-4 space-y-2">
@@ -147,14 +152,21 @@ export default function Navbar() {
                 <>
                   <div className="flex items-center gap-3 px-2 py-2">
                     <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-sm">
-                      {user.name ? user.name.charAt(0).toUpperCase() : (user.email || "U").charAt(0).toUpperCase()}
+                      {user.name?.charAt(0).toUpperCase() ||
+                        user.email?.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900">{user.name || user.email}</div>
                       <div className="text-xs text-gray-500">Account</div>
                     </div>
                   </div>
-                  <button onClick={handleLogout} className="block w-full text-left px-2 py-2 mt-2 text-red-600">Logout</button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-2 py-2 mt-2 text-red-600"
+                  >
+                    Logout
+                  </button>
                 </>
               )}
             </div>
