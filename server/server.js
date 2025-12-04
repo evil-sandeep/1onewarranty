@@ -8,7 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
+
 
 const app = express();
 app.use(express.json());
@@ -19,12 +19,8 @@ app.use(cors());
 app.use(express.json()); // parse JSON body
 app.use("/api/warranties", warrantyRoutes);
 
-// connect DB
-if (!MONGO_URI) {
-  console.error("MONGO_URI not set in env");
-  process.exit(1);
-}
-connectDB(MONGO_URI);
+
+connectDB();
 
 // routes
 app.get("/", (req, res) => res.send("OneWarranty API is running"));

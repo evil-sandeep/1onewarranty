@@ -4,18 +4,16 @@ const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
 
-// model
+// Model
 const Warranty = require(path.join(__dirname, "..", "models", "Warranty"));
 
-// Try to load demo data (supports .js or .json)
-const dataPathBase = path.join(__dirname, "..", "data", "demoWarranty"); // file without extension
+// Load demo data (.js or .json)
+const dataPathBase = path.join(__dirname, "..", "data", "demoWarranty"); 
 let sample;
 
 try {
-  // try .js/.cjs/.mjs via require first
   sample = require(dataPathBase);
 } catch (errRequire) {
-  // if require failed, try reading JSON file
   try {
     const jsonPath = dataPathBase + ".json";
     if (fs.existsSync(jsonPath)) {
@@ -35,23 +33,28 @@ if (!Array.isArray(sample)) {
   process.exit(1);
 }
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/onewarranty";
+// ✅ Use MONGO_CONN from .env
+const MONGO_CONN = process.env.MONGO_CONN;
+
+if (!MONGO_CONN) {
+  console.error("No Mongo connection string found in .env. Make sure MONGO_CONN is set.");
+  process.exit(1);
+}
 
 async function seed() {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log("Connected to MongoDB:", MONGO_URI);
+    await mongoose.connect(MONGO_CONN);
+    console.log("Connected to MongoDB:", MONGO_CONN);
 
     console.log("Sample length:", sample.length);
 
-    // clear existing docs
+    // Clear existing documents
     await Warranty.deleteMany({});
     console.log("Cleared existing warranties.");
 
-    // insert with ordered:false so errors won't stop whole insert
-    const inserted = await Warranty.insertMany(sample, { ordered: false }).catch((err) => {
+    // Insert demo data
+    const inserted = await Warranty.insertMany(sample, { ordered: false }).catch(err => {
       console.error("Partial insert error:", err && err.message);
-      // If partial failure, attempt to return insertedDocs if present
       return (err && err.insertedDocs) || [];
     });
 
