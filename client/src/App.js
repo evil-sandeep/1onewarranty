@@ -13,6 +13,7 @@ import WarrantyCheck from './components/WarrantyCheck';
 import{RouterProvider, createBrowserRouter} from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'; 
 import RequireAuth from './components/RequireAuth';
+import ServiceCenter from './components/ServiceCenter';
 
 
 
@@ -23,9 +24,10 @@ const appRouter=createBrowserRouter([
      children: [
       { index: true, element: <Home/> }, 
       { path: "login", element: <Login/> },
-      {path:'warrantyCheck', element:<WarrantyCheck/>},
+      {path:'/warrantyCheck', element:<WarrantyCheck/>},
       {path:'/warrantyForm', element:<RequireAuth><AddWarrantyForm/></RequireAuth>},
-      {path:'/signup', element:<SignUp/>}
+      {path:'/signup', element:<SignUp/>},
+      {path:'/servicecenter', element:<ServiceCenter/>},
     ]
   },
   

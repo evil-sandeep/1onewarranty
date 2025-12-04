@@ -1,5 +1,7 @@
 // src/components/Footer.jsx
 import React from "react";
+import {Link} from 'react-router-dom'
+import ServiceCenter from "./ServiceCenter";
 
 export default function Footer() {
   return (
@@ -10,14 +12,40 @@ export default function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm text-gray-700">
 
           <div>
-            <h4 className="font-medium text-gray-900 mb-3">Support</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-black">Warranty Check</a></li>
-              <li><a href="#" className="hover:text-black">Register Product</a></li>
-              <li><a href="#" className="hover:text-black">Service Center</a></li>
-              <li><a href="#" className="hover:text-black">Help</a></li>
-            </ul>
-          </div>
+  <h4 className="font-medium text-gray-900 mb-3">Support</h4>
+
+  <ul className="space-y-2">
+    <li>
+      <Link to="/warrantycheck" className="hover:text-black">
+        Warranty Check
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/WarrantyForm" className="hover:text-black">
+        Register Product
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/servicecenter" className="hover:text-black">
+        Service Center
+      </Link>
+    </li>
+
+    <li>
+      <a
+        href="https://wa.me/917377096138?text=Hello%20I%20need%20help%20regarding%20my%20warranty%20issue."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-black"
+      >
+        Help
+      </a>
+    </li>
+  </ul>
+</div>
+
 
           <div>
             <h4 className="font-medium text-gray-900 mb-3">Company</h4>
