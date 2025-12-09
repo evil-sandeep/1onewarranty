@@ -8,6 +8,8 @@ const connectDB = require('./config/db');
 const warrantyRoutes = require('./routes/warranty');
 const authRoutes = require('./routes/authRoutes');
 const contactRoute = require('./routes/contactRoute');
+const careerRoute = require("./routes/careerRoute");
+const googleAuth = require("./routes/googleAuth");
 
 const PORT = process.env.PORT || 5000;
 const MONGO_CONN = process.env.MONGO_CONN || process.env.MONGO_URI || process.env.MONGO_URL;
@@ -28,6 +30,11 @@ app.use((req, res, next) => {
 // --- Mount API routes ---
 // Mount contactRoute at root so its POST '/contact' becomes available as POST /contact
 app.use('/', contactRoute);
+
+//Career Route
+app.use("/", careerRoute);
+//Googleauth 
+app.use("/", googleAuth);
 
 // Mount warranty and auth routes under /api/**
 app.use('/api/warranties', warrantyRoutes);

@@ -198,6 +198,8 @@
 // }
 
 import React, { useState } from "react";
+import GoogleSignInButton from "./GoogleSignInButton";
+
 
 export default function SignUp() {
   const [form, setForm] = useState({
@@ -258,6 +260,7 @@ export default function SignUp() {
         <button className="w-full bg-black text-white py-2 rounded-xl">
           Sign Up
         </button>
+        <GoogleSignInButton/>
       </form>
     </div>
   );

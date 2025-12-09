@@ -16,6 +16,7 @@ import RequireAuth from './components/RequireAuth';
 import ServiceCenter from './components/ServiceCenter';
 import AboutUs from './components/AboutUs';
 import ContactMe from './components/ContactMe';
+import Career from './components/Career';
 
 
 
@@ -31,7 +32,8 @@ const appRouter=createBrowserRouter([
       {path:'/signup', element:<SignUp/>},
       {path:'/servicecenter', element:<ServiceCenter/>},
       {path:'/aboutus',element:<AboutUs/>},
-      {path:'/contact',element:<ContactMe/>}
+      {path:'/contact',element:<ContactMe/>},
+      {path:'/career',element:<Career/>},
     ]
   },
   
