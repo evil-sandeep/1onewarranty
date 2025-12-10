@@ -208,6 +208,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 export default function Login() {
   const { login } = useContext(AuthContext);
@@ -279,6 +280,7 @@ export default function Login() {
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>
+        <p className="mt-4 text-center text-sm"> <GoogleSignInButton/> </p>
 
         <p className="mt-4 text-center text-sm">
           Don't have an account? <Link to="/signup" className="text-black font-medium">Sign up</Link>

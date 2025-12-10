@@ -17,6 +17,8 @@ import ServiceCenter from './components/ServiceCenter';
 import AboutUs from './components/AboutUs';
 import ContactMe from './components/ContactMe';
 import Career from './components/Career';
+import GoogleSignInButton from './components/GoogleSignInButton';
+import AuthSuccess from './pages/AuthSuccess';
 
 
 
@@ -34,6 +36,7 @@ const appRouter=createBrowserRouter([
       {path:'/aboutus',element:<AboutUs/>},
       {path:'/contact',element:<ContactMe/>},
       {path:'/career',element:<Career/>},
+       { path: 'auth-success', element: <AuthSuccess/> },
     ]
   },
   

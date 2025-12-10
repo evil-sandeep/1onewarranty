@@ -5,10 +5,10 @@ const User = require("../models/User"); // adjust path to your User model
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
+const CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL; // ensure .env uses this name
 
-if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-  console.warn("Google OAuth ENV not set (GOOGLE_CLIENT_ID/SECRET).");
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !CALLBACK_URL) {
+  console.warn("Google OAuth ENV not set (GOOGLE_CLIENT_ID/SECRET/CALLBACK_URL).");
 }
 
 passport.use(
@@ -21,46 +21,61 @@ passport.use(
     // verify callback
     async function (accessToken, refreshToken, profile, done) {
       try {
-        // profile contains emails, id, displayName
-        const email = (profile.emails && profile.emails[0] && profile.emails[0].value) || null;
+        // profile may sometimes lack emails; guard it
+        const emailRaw = (profile.emails && profile.emails[0] && profile.emails[0].value) || null;
+        const email = emailRaw ? String(emailRaw).trim().toLowerCase() : null;
         const googleId = profile.id;
         const name = profile.displayName || "";
 
-        // find or create user - adapt to your DB
-        let user = await User.findOne({ googleId }).exec();
+        // find by googleId first, then by email (normalized)
+        let user = null;
+        if (googleId) {
+          user = await User.findOne({ googleId }).exec();
+        }
         if (!user && email) {
-          // ensure not duplicate by email
           user = await User.findOne({ email }).exec();
         }
 
         if (!user) {
+          // create user
           user = await User.create({
             name,
             email,
             googleId,
-            // mark as verified/registered via google
-            // add other default fields as needed
+            // optionally store profile photo: profile.photos?.[0]?.value
           });
-        } else if (!user.googleId) {
-          // if user existed by email and had no googleId, attach it
+        } else if (!user.googleId && googleId) {
+          // attach googleId if user existed by email
           user.googleId = googleId;
           await user.save();
         }
 
         return done(null, user);
       } catch (err) {
+        console.error("passportGoogle verify error:", err);
         return done(err);
       }
     }
   )
 );
 
-// if you use sessions, configure serialize/deserialize — optional
-passport.serializeUser((user, done) => done(null, user.id));
+// Optional: only needed for session support
+passport.serializeUser((user, done) => {
+  try {
+    done(null, user.id);
+  } catch (e) {
+    done(e);
+  }
+});
+
 passport.deserializeUser(async (id, done) => {
-  const User = require("../models/User");
-  const u = await User.findById(id).exec();
-  done(null, u || null);
+  try {
+    const u = await User.findById(id).exec();
+    done(null, u || null);
+  } catch (e) {
+    console.error("passport deserialize error:", e);
+    done(e);
+  }
 });
 
 module.exports = passport;

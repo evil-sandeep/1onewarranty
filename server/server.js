@@ -1,25 +1,45 @@
-// server.js
+// server.js (updated: passport init, cookie support, safer CORS, ping)
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 const warrantyRoutes = require('./routes/warranty');
 const authRoutes = require('./routes/authRoutes');
 const contactRoute = require('./routes/contactRoute');
-const careerRoute = require("./routes/careerRoute");
-const googleAuth = require("./routes/googleAuth");
+const careerRoute = require('./routes/careerRoute');
+const googleAuth = require('./routes/googleAuth');
+
+// ensure passport strategies are registered (this file loads your strategy)
+require('./config/passportGoogle');
 
 const PORT = process.env.PORT || 5000;
 const MONGO_CONN = process.env.MONGO_CONN || process.env.MONGO_URI || process.env.MONGO_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const app = express();
 
 // --- Middleware (single setup) ---
-app.use(cors()); // enable CORS for dev (configure origin in production if needed)
-app.use(express.json()); // parse JSON bodies
+// Configure CORS to allow your frontend and credentials (cookies) if needed.
+// In production narrow this down further.
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true,
+}));
+
+// cookie parser (needed if you use httpOnly cookie to store token)
+app.use(cookieParser());
+
+// body parsers
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// initialize passport (must be done before routes that use it)
+app.use(passport.initialize());
+// If you use sessions: app.use(passport.session());
 
 // Simple request logger to help debug requests
 app.use((req, res, next) => {
@@ -27,20 +47,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Quick health / ping route
+app.get('/ping', (req, res) => res.send('pong'));
+
 // --- Mount API routes ---
-// Mount contactRoute at root so its POST '/contact' becomes available as POST /contact
+// Keep your existing mounting style (mounted at root)
+// Mount contactRoute at root so its POST '/contact' is available as POST /contact
 app.use('/', contactRoute);
 
-//Career Route
-app.use("/", careerRoute);
-//Googleauth 
-app.use("/", googleAuth);
+// Career and Google Auth
+app.use('/', careerRoute);
+app.use('/', googleAuth);
 
 // Mount warranty and auth routes under /api/**
 app.use('/api/warranties', warrantyRoutes);
 app.use('/api/auth', authRoutes);
 
-// Basic health route
+// Basic health route (keeps the same response at /)
 app.get('/', (req, res) => res.send('OneWarranty API is running'));
 
 // Serve client build in production AFTER all API routes
